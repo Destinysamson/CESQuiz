@@ -1,569 +1,324 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CES 211 Practice Test</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --accent: #6366f1;
-      --accent-hover: #4f46e5;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --correct: #22c55e;
-      --correct-bg: rgba(34, 197, 94, 0.15);
-      --wrong: #ef4444;
-      --wrong-bg: rgba(239, 68, 68, 0.15);
-      --border: #334155;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      display: flex;
-      justify-content: center;
-      padding: 16px;
-      min-height: 100vh;
-    }
-
-    .app-container {
-      width: 100%;
-      max-width: 650px;
-      margin: 0 auto;
-    }
-
-    header {
-      background-color: var(--card-bg);
-      padding: 16px 20px;
-      border-radius: 12px;
-      margin-bottom: 16px;
-      border: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .title-area h1 {
-      font-size: 1.1rem;
-      color: #38bdf8;
-    }
-
-    .title-area p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .badge {
-      background: var(--border);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-
-    .card {
-      background-color: var(--card-bg);
-      padding: 24px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-    }
-
-    .progress-bar-container {
-      width: 100%;
-      height: 6px;
-      background: var(--border);
-      border-radius: 3px;
-      margin-bottom: 20px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: var(--accent);
-      width: 0%;
-      transition: width 0.3s ease;
-    }
-
-    .question-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-bottom: 12px;
-    }
-
-    .question-text {
-      font-size: 1.15rem;
-      line-height: 1.5;
-      font-weight: 500;
-      margin-bottom: 24px;
-    }
-
-    .options-container {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
-    .option-btn {
-      background-color: transparent;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 14px 16px;
-      border-radius: 8px;
-      text-align: left;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-    }
-
-    .option-btn:hover:not(:disabled) {
-      background-color: var(--border);
-    }
-
-    .option-btn.correct {
-      border-color: var(--correct);
-      background-color: var(--correct-bg);
-      color: #86efac;
-    }
-
-    .option-btn.wrong {
-      border-color: var(--wrong);
-      background-color: var(--wrong-bg);
-      color: #fca5a5;
-    }
-
-    .feedback-box {
-      padding: 16px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      font-size: 0.9rem;
-      line-height: 1.4;
-      display: none;
-    }
-
-    .feedback-box.correct {
-      display: block;
-      background: var(--correct-bg);
-      border: 1px solid var(--correct);
-    }
-
-    .feedback-box.wrong {
-      display: block;
-      background: var(--wrong-bg);
-      border: 1px solid var(--wrong);
-    }
-
-    .nav-controls {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .nav-btn {
-      flex: 1;
-      background-color: var(--accent);
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    .nav-btn:hover:not(:disabled) {
-      background-color: var(--accent-hover);
-    }
-
-    .nav-btn:disabled {
-      background-color: var(--border);
-      color: var(--text-muted);
-      cursor: not-allowed;
-    }
-
-    .finish-early-btn {
-      width: 100%;
-      background-color: transparent;
-      border: 1px solid var(--wrong);
-      color: #fca5a5;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 16px;
-    }
-
-    .finish-early-btn:hover {
-      background-color: var(--wrong-bg);
-    }
-
-    .results-screen {
-      text-align: center;
-      padding: 20px 0;
-    }
-
-    .score-circle {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      border: 4px solid var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px auto;
-      font-size: 1.8rem;
-      font-weight: 700;
-    }
-
-    .restart-btn {
-      background-color: var(--accent);
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 20px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CES 211 Practice Test (100 Questions)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .quiz-container {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 650px;
+        }
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        #timer-container {
+            font-size: 16px;
+            font-weight: bold;
+            color: #d9534f;
+            background: #fdf2f2;
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 1px solid #f5c6cb;
+        }
+        h2 {
+            margin-top: 0;
+            font-size: 18px;
+            color: #333;
+            line-height: 1.4;
+        }
+        .options-list {
+            list-style: none;
+            padding: 0;
+        }
+        .option-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .option-item:hover {
+            background: #e9ecef;
+        }
+        .option-item.selected {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+            font-weight: bold;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #prev-btn { background: #6c757d; color: white; }
+        #next-btn { background: #007bff; color: white; }
+        #finish-btn { background: #28a745; color: white; width: 100%; margin-top: 15px; font-size: 16px; }
+        button:disabled { background: #cccccc; cursor: not-allowed; }
+        #score-display {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="app-container">
-    <header>
-      <div class="title-area">
-        <h1>CES 211 Practice Test</h1>
-        <p>Entrepreneurship & Innovation</p>
-      </div>
-      <div class="badge" id="scoreBadge">Score: 0</div>
-    </header>
-
-    <div class="card" id="quizCard">
-      <div class="progress-bar-container">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
-
-      <div class="question-header">
-        <span id="qIndex">Question 1 of 100</span>
-      </div>
-
-      <div class="question-text" id="qText">Loading question...</div>
-
-      <div class="options-container" id="optionsContainer"></div>
-
-      <div class="feedback-box" id="feedbackBox"></div>
-
-      <div class="nav-controls">
-        <button class="nav-btn" id="prevBtn" disabled>Previous</button>
-        <button class="nav-btn" id="nextBtn">Next</button>
-      </div>
-
-      <button class="finish-early-btn" id="finishEarlyBtn">Finish Quiz & See Score</button>
+<div class="quiz-container" id="quiz-app">
+    <div class="header-row">
+        <h3 id="question-tracker" style="margin: 0; font-size: 14px; color: #666;">Question 1 of 100</h3>
+        <div id="timer-container">⏱️ Time Left: <span id="time">50:00</span></div>
     </div>
 
-    <div class="card hidden" id="resultCard">
-      <div class="results-screen">
-        <h2>Quiz Results</h2>
-        <p style="color: var(--text-muted); margin-top: 6px; margin-bottom: 24px;" id="attemptSummary">Here is your performance summary:</p>
+    <div id="quiz-content">
+        <h2 id="question-text">Loading question...</h2>
+        <ul class="options-list" id="options-list">
+            <!-- Options load dynamically -->
+        </ul>
         
-        <div class="score-circle" id="finalScore">0%</div>
-        
-        <p id="scoreDetails" style="font-size: 1.1rem; margin-bottom: 10px;"></p>
-        <p id="gradeComment" style="color: var(--text-muted);"></p>
-
-        <button class="restart-btn" id="restartBtn">Retake Quiz</button>
-      </div>
+        <div class="btn-container">
+            <button id="prev-btn" onclick="prevQuestion()">Previous</button>
+            <button id="next-btn" onclick="nextQuestion()">Next</button>
+        </div>
     </div>
-  </div>
 
-  <script>
+    <button id="finish-btn" onclick="finishQuiz()">Finish Quiz & See Score</button>
+</div>
+
+<script>
     const quizData = [
-      { question: "One major objective of entrepreneurship education is to cultivate an ______ mindset.", options: ["Administrative", "Entrepreneurial", "Political", "Bureaucratic"], answer: 1 },
-      { question: "Entrepreneurship education develops students' ability to recognize and ______ opportunities.", options: ["reject", "avoid", "seize", "postpone"], answer: 2 },
-      { question: "A proactive, risk-taking and ______ approach to problem-solving is encouraged by entrepreneurship education.", options: ["traditional", "innovative", "passive", "conservative"], answer: 1 },
-      { question: "Entrepreneurship education teaches the fundamentals of business planning, financial management and ______ acquisition.", options: ["resource", "political", "cultural", "social"], answer: 0 },
-      { question: "Developing business models, prototyping and customer ______ are practical entrepreneurial skills.", options: ["rejection", "validation", "avoidance", "replacement"], answer: 1 },
-      { question: "Entrepreneurship education prepares students to navigate the challenges and ______ of the entrepreneurial process.", options: ["certainties", "uncertainties", "profits", "policies"], answer: 1 },
-      { question: "One learning outcome of entrepreneurship education is the ability to identify opportunities, take calculated risks and ______.", options: ["innovate", "speculate", "withdraw", "complain"], answer: 0 },
-      { question: "Effective communication and ______ are important entrepreneurial learning outcomes.", options: ["isolation", "collaboration", "competition", "separation"], answer: 1 },
-      { question: "Adaptability refers to the capacity to adjust to changing ______.", options: ["circumstances", "salaries", "positions", "accounts"], answer: 0 },
-      { question: "The skill to generate innovative solutions to problems is known as ______.", options: ["creativity", "accounting", "delegation", "negotiation"], answer: 0 },
-      { question: "The ability to prioritize tasks, set goals and manage time efficiently is called ______ management.", options: ["financial", "time", "human", "resource"], answer: 1 },
-      { question: "The commitment to stay curious and continuously expand one's knowledge is known as ______ learning.", options: ["traditional", "continuous", "temporary", "seasonal"], answer: 1 },
-      { question: "Entrepreneurship education can reduce dependence on traditional ______-seeking.", options: ["business", "employment", "job", "market"], answer: 2 },
-      { question: "Entrepreneurship involves creating new business ideas and transforming them into tangible goods and ______.", options: ["capital", "services", "theories", "policies"], answer: 1 },
-      { question: "According to Schumpeter, entrepreneurship involves new combinations of ______.", options: ["employees", "resources", "governments", "customers"], answer: 1 },
-      { question: "The success of entrepreneurship hinges largely on creativity and ______.", options: ["taxation", "innovation", "bureaucracy", "employment"], answer: 1 },
-      { question: "Which of the following is a characteristic of entrepreneurship?", options: ["Risk-taking", "Risk avoidance", "Dependence", "Inactivity"], answer: 0 },
-      { question: "Entrepreneurship involves transforming raw materials into finished products through ______ addition.", options: ["market", "value", "political", "social"], answer: 1 },
-      { question: "Entrepreneurship is regarded as a ______-oriented activity.", options: ["result", "government", "family", "salary"], answer: 0 },
-      { question: "One major objective of entrepreneurship is the creation of ______ opportunities.", options: ["employment", "political", "recreational", "foreign"], answer: 0 },
-      { question: "Entrepreneurship contributes to ______ alleviation through employment creation.", options: ["poverty", "technology", "competition", "inflation"], answer: 0 },
-      { question: "An entrepreneur is a generator of business ideas, organizer of resources and ______ of business.", options: ["critic", "manager", "customer", "employee"], answer: 1 },
-      { question: "An entrepreneur must have confidence in himself or herself and believe in his or her ______.", options: ["competitors", "ideas", "employees", "customers"], answer: 1 },
-      { question: "Which of the following is a characteristic of a good entrepreneur?", options: ["Pessimism", "Optimism", "Laziness", "Indecision"], answer: 1 },
-      { question: "Intrapreneurship creates opportunities for ______ to exhibit entrepreneurial skills within an organization.", options: ["customers", "employees", "competitors", "suppliers"], answer: 1 },
-      { question: "The psychological theory of entrepreneurship emphasizes personality traits, locus of control and the need for ______.", options: ["achievement", "employment", "taxation", "ownership"], answer: 0 },
-      { question: "Entrepreneurship involves creating or obtaining ______ value.", options: ["economic", "political", "cultural", "personal"], answer: 0 },
-      { question: "Entrepreneurs take the majority of the risks and reap the majority of the ______.", options: ["losses", "returns", "expenses", "taxes"], answer: 1 },
-      { question: "Which of the following is a type of entrepreneurship?", options: ["Cultural entrepreneurship", "Administrative entrepreneurship", "Bureaucratic entrepreneurship", "Government entrepreneurship"], answer: 0 },
-      { question: "A well-written ______ plan is an indicator of entrepreneurial success.", options: ["business", "political", "family", "academic"], answer: 0 },
-      { question: "Market indicators include business-to-business and business-to-______ models.", options: ["government", "customer", "employee", "supplier"], answer: 1 },
-      { question: "Which of the following is an industry indicator?", options: ["High capital intensity", "Low customer demand", "Poor management", "High employee turnover"], answer: 0 },
-      { question: "The first stage of innovative thinking is ______.", options: ["evaluation", "preparation", "commercialization", "implementation"], answer: 1 },
-      { question: "Critical thinking involves questioning, analysing, interpreting and ______ information.", options: ["ignoring", "evaluating", "destroying", "selling"], answer: 1 },
-      { question: "The first step in critical thinking is to identify the ______.", options: ["profit", "problem", "customer", "product"], answer: 1 },
-      { question: "The ability to look at a problem from different perspectives is a basic ______-thinking skill.", options: ["critical", "financial", "accounting", "managerial"], answer: 0 },
-      { question: "Reflective thinking involves considering the larger context, meaning and ______ of an experience.", options: ["implications", "profits", "salaries", "prices"], answer: 0 },
-      { question: "Creative thinking is the ability to come up with unique ______ solutions.", options: ["original", "traditional", "borrowed", "expensive"], answer: 0 },
-      { question: "How many major types of innovation are identified in the material?", options: ["Two", "Three", "Four", "Five"], answer: 2 },
-      { question: "Which type of innovation involves gradual and continuous improvements to an existing product or service?", options: ["Radical", "Disruptive", "Incremental", "Sustaining"], answer: 2 },
-      { question: "The word entrepreneurship is derived from the French word ______.", options: ["Entrepreneur", "Entreprendre", "Enterprise", "Entreprise"], answer: 1 },
-      { question: "The word Entreprendre means ______.", options: ["business", "pledge", "wealth", "innovation"], answer: 1 },
-      { question: "Cultural entrepreneurship begins with a cultural ______ and leads to a cultural business.", options: ["product", "idea", "market", "profit"], answer: 1 },
-      { question: "Cultural entrepreneurship can contribute to job and ______ creation.", options: ["wealth", "political", "academic", "military"], answer: 0 },
-      { question: "NEPZA stands for Nigerian Export Processing Zones ______.", options: ["Administration", "Authority", "Association", "Agency"], answer: 1 },
-      { question: "NIPC stands for Nigerian Investment Promotion ______.", options: ["Commission", "Council", "Corporation", "Committee"], answer: 0 },
-      { question: "NEPC stands for Nigerian Export Promotion ______.", options: ["Commission", "Council", "Corporation", "Committee"], answer: 1 },
-      { question: "NEPC encourages the growth of ______-oil exports from Nigeria.", options: ["high", "non", "crude", "foreign"], answer: 1 },
-      { question: "ANE stands for Association of Nigerian ______.", options: ["Entrepreneurs", "Exporters", "Employers", "Educators"], answer: 1 },
-      { question: "NEXIM Bank was established to provide easy access to ______ financing.", options: ["export", "personal", "political", "agricultural"], answer: 0 },
-      { question: "Entrepreneurship support institutions act as catalysts for ______ businesses.", options: ["large", "small", "foreign", "government"], answer: 1 },
-      { question: "Mentoring programmes match experienced entrepreneurs with ______ entrepreneurs.", options: ["old", "young", "foreign", "retired"], answer: 1 },
-      { question: "An unstable political climate may discourage business because investors fear the safety and ______ of their investments.", options: ["security", "profit", "marketing", "expansion"], answer: 0 },
-      { question: "Opportunity identification is the ability to identify a good idea and transform it into a business ______.", options: ["policy", "concept", "regulation", "salary"], answer: 1 },
-      { question: "A good business concept should add value and generate ______.", options: ["revenue", "taxes", "debt", "salaries"], answer: 0 },
-      { question: "Opportunity identification is an essential component of the ______ process.", options: ["accounting", "entrepreneurial", "political", "manufacturing"], answer: 1 },
-      { question: "Entrepreneurs identify opportunities based on personal qualities, networks and ______ processes.", options: ["cognitive", "financial", "political", "accounting"], answer: 0 },
-      { question: "Opportunity discovery involves being proactive in ______ chances.", options: ["avoiding", "seizing", "rejecting", "delaying"], answer: 1 },
-      { question: "When choosing a business opportunity, an entrepreneur should examine his or her ______.", options: ["rivals", "family", "lecturers", "neighbours"], answer: 0 },
-      { question: "The objective of brainstorming is to come up with many ______.", options: ["employees", "ideas", "products", "companies"], answer: 1 },
-      { question: "During brainstorming, there should be no criticism, rewards or ______.", options: ["judgments", "ideas", "discussions", "participation"], answer: 0 },
-      { question: "A focus group is guided by a ______.", options: ["manager", "moderator", "customer", "secretary"], answer: 1 },
-      { question: "A typical focus group consists of approximately ______ to ______ recruited people.", options: ["2–4", "5–7", "8–14", "20–30"], answer: 2 },
-      { question: "Which technique uses a graphical approach to turn an idea into a visual representation?", options: ["Brainwriting", "Mind mapping", "Focus grouping", "Interviewing"], answer: 1 },
-      { question: "Persuading investors to invest in a groundbreaking concept is known as ______.", options: ["business planning", "idea pitching", "market research", "risk analysis"], answer: 1 },
-      { question: "Identifying, generating and seizing new business prospects for a firm is known as ______.", options: ["business development", "business closure", "business taxation", "business auditing"], answer: 0 },
-      { question: "A business plan outlines the company's objectives and ______ for achieving them.", options: ["strategies", "salaries", "employees", "competitors"], answer: 0 },
-      { question: "The title page of a business plan contains the firm's name, address, logo and names of the ______.", options: ["customers", "founders", "competitors", "suppliers"], answer: 1 },
-      { question: "The executive summary provides a quick description of the issue or ______.", options: ["proposition", "salary", "employee", "competitor"], answer: 0 },
-      { question: "The mission statement guides the company's growth and ______.", options: ["direction", "taxation", "salary", "production"], answer: 0 },
-      { question: "Market analysis involves competition analysis, marketing strategy, market research and sales ______.", options: ["expenses", "forecasts", "salaries", "taxes"], answer: 1 },
-      { question: "Technical analysis outlines the results of the technical ______ study.", options: ["marketing", "feasibility", "accounting", "leadership"], answer: 1 },
-      { question: "The simplest form of business ownership is ______.", options: ["partnership", "corporation", "sole proprietorship", "cooperative"], answer: 2 },
-{ question: "In a sole proprietorship, there is only ______ owner.", options: ["one", "two", "three", "several"], answer: 0 },
-      { question: "In a general partnership, partners share the company's gains and ______.", options: ["assets", "losses", "employees", "customers"], answer: 1 },
-      { question: "Small Business Management refers to practices and strategies used in running a ______-scale enterprise.", options: ["large", "small", "multinational", "governmental"], answer: 1 },
-      { question: "Small businesses commonly operate with limited ______.", options: ["resources", "customers", "markets", "technology"], answer: 0 },
-      { question: "Family business involves family members in the ownership and ______ of the business.", options: ["management", "taxation", "marketing", "advertising"], answer: 0 },
-      { question: "Leadership primarily involves influencing and ______ others to achieve common goals.", options: ["inspiring", "controlling", "punishing", "replacing"], answer: 0 },
-      { question: "Management focuses on planning, organizing and ______ resources.", options: ["wasting", "controlling", "selling", "borrowing"], answer: 1 },
-      { question: "Which leadership style inspires followers to exceed their self-interests for the good of the organization?", options: ["Autocratic", "Transformational", "Laissez-faire", "Transactional"], answer: 1 },
-      { question: "Transactional leadership focuses on routine procedures and clear ______-term goals.", options: ["long", "short", "permanent", "indefinite"], answer: 1 },
-      { question: "Which leadership style prioritizes the needs of the team?", options: ["Servant", "Autocratic", "Transactional", "Bureaucratic"], answer: 0 },
-      { question: "Autocratic leadership centralizes ______.", options: ["communication", "authority", "employment", "innovation"], answer: 1 },
-      { question: "Democratic leadership encourages team participation in ______-making.", options: ["profit", "decision", "market", "resource"], answer: 1 },
-      { question: "Laissez-faire leadership gives followers freedom and ______.", options: ["punishment", "autonomy", "restrictions", "supervision"], answer: 1 },
-      { question: "Situational leaders adjust their leadership style according to the current ______.", options: ["situation", "salary", "company", "customer"], answer: 0 },
-      { question: "Henri Fayol identified planning, organizing, staffing, leading and ______ as management functions.", options: ["financing", "controlling", "marketing", "selling"], answer: 1 },
-      { question: "The management function concerned with setting goals and determining the best course of action is ______.", options: ["planning", "staffing", "controlling", "leading"], answer: 0 },
-      { question: "Staffing involves getting the ______ person for the ______ job.", options: ["available; difficult", "right; right", "senior; junior", "trained; wrong"], answer: 1 },
-      { question: "Negotiation is critical in defining the terms of agreements and ______.", options: ["contracts", "salaries", "products", "advertisements"], answer: 0 },
-      { question: "Principled negotiation was popularized by Fisher, Ury and ______.", options: ["Fayol", "Patton", "Drucker", "Schumpeter"], answer: 1 },
-      { question: "Principled negotiation emphasizes separating people from the ______.", options: ["customer", "problem", "company", "contract"], answer: 1 },
-      { question: "Distributive bargaining is also known as ______-sum negotiation.", options: ["positive", "zero", "double", "equal"], answer: 1 },
-      { question: "Integrative negotiation seeks mutually ______ solutions.", options: ["harmful", "beneficial", "expensive", "competitive"], answer: 1 },
-      { question: "BATNA means Best Alternative to a ______ Negotiated Agreement.", options: ["Business", "Best", "Bad", "Basic"], answer: 1 },
-      { question: "The originator of a message in the communication process is the ______.", options: ["receiver", "sender", "channel", "decoder"], answer: 1 },
-      { question: "The person who receives a message is the ______.", options: ["sender", "receiver", "channel", "encoder"], answer: 1 },
-      { question: "The response given by the receiver after receiving and understanding a message is called ______.", options: ["feedback", "encoding", "noise", "channel"], answer: 0 },
-      { question: "The five basic elements of communication include sender, receiver, message, feedback and ______.", options: ["channel", "profit", "negotiation", "leadership"], answer: 0 }
+        { question: "1. An entrepreneur who can recognize an opportunity, take a calculated risk, develop a business model and validate customer needs is demonstrating primarily which combination of competencies?", options: ["Entrepreneurial mindset and practical entrepreneurial skills", "Traditional employment and administrative competence", "Financial management and organizational control", "Technical specialization and bureaucratic competence"], answer: 0 },
+        { question: "2. Which of the following best distinguishes adaptability from merely possessing entrepreneurial knowledge?", options: ["Ability to memorize business concepts", "Ability to adjust to changing circumstances and create opportunities", "Ability to avoid uncertain situations", "Ability to maintain an existing business model regardless of circumstances"], answer: 1 },
+        { question: "3. The emphasis on entrepreneurship as a career path alongside traditional employment is primarily associated with which objective?", options: ["Resource acquisition", "Career readiness and adaptability", "Customer validation", "Business model development"], answer: 1 },
+        { question: "4. A student continuously acquires new knowledge, modifies his approach when circumstances change and develops new professional opportunities. This most directly illustrates:", options: ["Lifelong learning and personal growth", "Traditional employment orientation", "Risk avoidance", "Resource acquisition"], answer: 0 },
+        { question: "5. Which activity most directly represents the practical rather than merely theoretical aspect of entrepreneurship education?", options: ["Defining entrepreneurship", "Memorizing theories of entrepreneurship", "Developing a prototype and validating customer needs", "Listing characteristics of entrepreneurs"], answer: 2 },
+        { question: "6. The emphasis on communication and collaboration suggests that entrepreneurial effectiveness is not limited to individual creativity because entrepreneurs must also:", options: ["avoid dependence on other people", "communicate ideas, collaborate and adapt to changing circumstances", "concentrate exclusively on financial management", "replace traditional employment with self-employment"], answer: 1 },
+        { question: "7. Which of the following is least consistent with the entrepreneurial mindset?", options: ["Calculated risk-taking", "Proactive problem-solving", "Continuous learning", "Dependence on fixed solutions regardless of circumstances"], answer: 3 },
+        { question: "8. The ability to take ownership of one's professional development and become a self-reliant job creator is most closely associated with:", options: ["Lifelong learning and personal growth", "Customer validation", "Financial management", "Product distribution"], answer: 0 },
+        { question: "9. According to the material, entrepreneurship is more accurately understood as the process of:", options: ["acquiring an existing business without changing its operations", "creating business ideas and transforming them into tangible goods and services", "producing goods without considering human wants", "investing only in established corporations"], answer: 1 },
+        { question: "10. Schumpeter's expression 'new combinations of resources' most directly emphasizes which feature of entrepreneurship?", options: ["Routine administration", "Innovation", "Employee supervision", "Financial accounting"], answer: 1 },
+        { question: "11. An individual identifies an opportunity, organizes human and non-human resources and manages them toward business growth. Which description best captures this person's entrepreneurial role?", options: ["Passive investor", "Resource organizer and opportunity exploiter", "Government regulator", "Consumer representative"], answer: 1 },
+        { question: "12. Which statement is least compatible with the material's description of entrepreneurship?", options: ["It can involve producing and marketing goods and services.", "It can create value through creativity and innovation.", "It necessarily eliminates all forms of uncertainty.", "It can contribute to economic growth and poverty reduction."], answer: 2 },
+        { question: "13. A person who possesses an innovative business idea but refuses to organize the necessary resources has not fully demonstrated entrepreneurship because entrepreneurship also involves:", options: ["resource organization and utilization", "market withdrawal", "avoidance of decision-making", "elimination of competition"], answer: 0 },
+        { question: "14. Which characteristic is most directly concerned with an entrepreneur's willingness to continue pursuing business success despite difficulties?", options: ["Passion", "Optimism", "Teamwork", "Mentorship"], answer: 0 },
+        { question: "15. The material associates visionary entrepreneurship with the ability to:", options: ["focus exclusively on present sales", "forecast and predict business growth in the long run", "avoid innovation until competitors act", "delegate every business decision"], answer: 1 },
+        { question: "16. If an entrepreneur believes strongly in an idea but cannot cooperate effectively with employees and other persons in the business, which characteristic identified in the material is most clearly deficient?", options: ["Confidence", "Teamwork", "Optimism", "Passion"], answer: 1 },
+        { question: "17. Which pair correctly represents two roles of an entrepreneur as described in the material?", options: ["Consumer and regulator", "Innovator and organizer of resources", "Auditor and tax collector", "Employee and civil servant"], answer: 1 },
+        { question: "18. The statement that entrepreneurship is a business and economic activity is best supported by its involvement in:", options: ["production, processing, packaging, marketing and distribution", "only idea generation", "only social interaction", "only financial borrowing"], answer: 0 },
+        { question: "19. An entrepreneur establishes a business around a cultural practice and seeks to turn that cultural idea into a commercial activity. This most directly illustrates:", options: ["Cultural entrepreneurship", "Radical entrepreneurship", "Distributive entrepreneurship", "Industrial entrepreneurship"], answer: 0 },
+        { question: "20. Which of the following is not one of the four major types of innovation identified in the material?", options: ["Disruptive innovation", "Incremental innovation", "Sustaining innovation", "Administrative innovation"], answer: 3 },
+        { question: "21. A company repeatedly makes small improvements to an existing product without fundamentally changing the market. The innovation is best classified as:", options: ["Radical innovation", "Disruptive innovation", "Incremental innovation", "Sustaining innovation"], answer: 2 },
+        { question: "22. Which situation most clearly represents radical innovation rather than incremental innovation?", options: ["Improving an existing product's packaging", "Making small improvements to an existing service", "Introducing breakthrough technology that fundamentally changes how an organization engages the market", "Adding a minor feature to an existing product"], answer: 2 },
+        { question: "23. Sustaining innovation differs from incremental innovation primarily because sustaining innovation is concerned with:", options: ["defending or securing a leading market position through significant changes", "eliminating all existing products", "making only accounting adjustments", "avoiding changes to existing products"], answer: 0 },
+        { question: "24. Which sequence correctly represents the three processes of reflective thinking identified in the material?", options: ["Planning → organizing → controlling", "Experiencing something → reflecting on the experience → learning from the experience", "Creating → selling → distributing", "Observing → borrowing → reproducing"], answer: 1 },
+        { question: "25. A student asks, 'What happened?' and then goes further to consider the implications and lessons of the experience. The second activity is more closely associated with:", options: ["creative thinking", "reflective thinking", "routine thinking", "administrative thinking"], answer: 1 },
+        { question: "26. Which of the following is specifically identified as a basic skill needed for critical thinking?", options: ["Blind acceptance", "Ability to look at a problem from different perspectives", "Avoidance of argument", "Dependence on intuition alone"], answer: 1 },
+        { question: "27. If creativity is the ability to generate new ideas, innovation is best distinguished as the process of:", options: ["keeping those ideas theoretical", "bringing new ideas into realization in an entrepreneurial context", "rejecting existing products", "eliminating business risk"], answer: 1 },
+        { question: "28. A new product that adds value to an existing product without necessarily creating an entirely new market can still be regarded as innovation because the material defines innovation broadly as:", options: ["only revolutionary technological change", "any new idea, process, product or change that adds value", "only digital transformation", "only market disruption"], answer: 1 },
+        { question: "29. The French expression from which entrepreneurship is derived in the material is:", options: ["Entrepreneur", "Entreprendre", "Entreprise", "Entreprenant"], answer: 1 },
+        { question: "30. In the material, Entreprendre is associated with the meaning:", options: ["profit", "pledge", "market", "enterprise"], answer: 1 },
+        { question: "31. Which statement best distinguishes cultural entrepreneurship from entrepreneurship generally?", options: ["Cultural entrepreneurship excludes profit-making.", "Cultural entrepreneurship begins with a cultural idea and leads toward cultural business.", "Cultural entrepreneurship is restricted to government organizations.", "Cultural entrepreneurship does not involve innovation."], answer: 1 },
+        { question: "32. An entrepreneur whose cultural business creates employment while preserving cultural value is demonstrating which potential benefit of cultural entrepreneurship?", options: ["Wealth and job creation", "Political instability", "Market withdrawal", "Resource depletion"], answer: 0 },
+        { question: "33. NEXIM Bank is relevant to entrepreneurship in Nigeria primarily because it provides:", options: ["export financing", "employment taxation", "political representation", "university admission"], answer: 0 },
+        { question: "34. Which institution is specifically associated with promoting Nigerian exports?", options: ["NIPC", "NEPC", "NEPZA", "NEXIM"], answer: 1 },
+        { question: "35. A major reason why an unstable political environment may discourage entrepreneurship is that it can increase uncertainty regarding:", options: ["investment security", "product packaging", "customer preferences", "employee motivation"], answer: 0 },
+        { question: "36. Which of the following represents a cultural barrier rather than a financial barrier to entrepreneurship?", options: ["Inadequate access to loans", "High cost of capital", "Social attitudes that discourage entrepreneurial activity", "Limited availability of venture capital"], answer: 2 },
+        { question: "37. If an entrepreneurship support programme pairs an experienced entrepreneur with a younger entrepreneur for guidance and development, the relationship is best described as:", options: ["mentoring", "outsourcing", "franchising", "liquidation"], answer: 0 },
+        { question: "38. Which combination most accurately reflects improving entrepreneurship in Nigeria?", options: ["Support institutions, youth enterprise networks and improved assistance to young people and women", "Higher barriers, weaker networks and reduced access to support", "Elimination of cultural businesses and informal enterprises", "Exclusive dependence on foreign entrepreneurs"], answer: 0 },
+        { question: "39. According to the material, opportunity identification is best described as the ability to:", options: ["discover an idea and immediately sell it", "identify a good idea and transform it into a business concept that adds value and generates revenue", "copy a competitor's business model without modification", "identify only technological inventions"], answer: 1 },
+        { question: "40. Which statement about entrepreneurial opportunities is most consistent with the material?", options: ["Every opportunity must represent a revolutionary breakthrough.", "Opportunities may arise from novel combinations of pre-existing ideas.", "Opportunities exist only in high-technology industries.", "Opportunities are independent of consumer behaviour."], answer: 1 },
+        { question: "41. Stevenson associated opportunities with circumstances such as technological advancement, consumer purchasing power, living standards and:", options: ["legislation concerning goods and services", "employee salaries", "business taxation alone", "accounting standards alone"], answer: 0 },
+        { question: "42. An entrepreneur discovers a business opportunity accidentally while observing an unrelated activity. This most closely corresponds to:", options: ["motivated search", "serendipitous discovery", "strategic planning", "deliberate imitation"], answer: 1 },
+        { question: "43. An entrepreneur deliberately investigates customer complaints and market gaps until a viable business opportunity is found. This is more consistent with:", options: ["motivated search", "serendipitous discovery", "passive observation", "random experimentation"], answer: 0 },
+        { question: "44. Why is opportunity identification considered fundamental to enterprise formation?", options: ["Entrepreneurial activities cannot exist without an opportunity.", "All opportunities automatically guarantee profit.", "Enterprise formation eliminates uncertainty.", "Opportunity identification removes the need for resources."], answer: 0 },
+        { question: "45. Which of the following would be the weakest basis for choosing between two apparently attractive business opportunities?", options: ["Customer demand", "Competitive environment", "Available resources", "Ignoring whether the opportunity can create value"], answer: 3 },
+        { question: "46. The objective of brainstorming is primarily to:", options: ["evaluate one idea immediately", "generate many ideas before detailed judgment", "select the most profitable business immediately", "eliminate unconventional suggestions"], answer: 1 },
+        { question: "47. A focus group differs from brainstorming mainly because the focus group is organized around:", options: ["guided discussion with participants under a moderator", "independent silent decision-making", "financial auditing", "formal business registration"], answer: 0 },
+        { question: "48. A graphical technique that turns an idea into a visual representation is:", options: ["mind mapping", "idea pitching", "risk assessment", "market segmentation"], answer: 0 },
+        { question: "49. Which statement best explains why a family business should not automatically be treated as synonymous with a small business?", options: ["Every family business must be large.", "Family businesses are defined by family involvement, whereas small businesses are considered primarily in relation to their scale and characteristics.", "Small businesses cannot involve family members.", "Family businesses cannot pursue profit."], answer: 1 },
+        { question: "50. A manager who sets objectives and determines the course of action before allocating responsibilities is primarily performing which management function?", options: ["Controlling", "Planning", "Staffing", "Leading"], answer: 1 },
+        { question: "51. Which leadership style gives followers considerable freedom and autonomy, with minimal direct supervision?", options: ["Autocratic", "Transactional", "Laissez-faire", "Democratic"], answer: 2 },
+        { question: "52. A leader who concentrates decision-making authority in himself or herself is exhibiting:", options: ["democratic leadership", "servant leadership", "autocratic leadership", "laissez-faire leadership"], answer: 2 },
+        { question: "53. Which situation best illustrates transformational leadership?", options: ["Employees receive rewards only when they meet predetermined targets.", "The leader inspires employees to pursue a broader organizational vision beyond immediate self-interest.", "Employees make every decision without leadership direction.", "The leader avoids involvement in employee development."], answer: 1 },
+        { question: "54. A leader who adjusts his or her leadership approach according to the circumstances and needs of followers is demonstrating:", options: ["transactional leadership", "situational leadership", "autocratic leadership", "bureaucratic leadership"], answer: 1 },
+        { question: "55. Which statement about bookkeeping is most accurate?", options: ["It is primarily the process of making strategic decisions.", "It involves recording and tracking business transactions such as income and expenses.", "It replaces financial management entirely.", "It is limited to large corporations."], answer: 1 },
+        { question: "56. The fundamental distinction between single-entry and double-entry bookkeeping is that double-entry:", options: ["records transactions only when cash is received", "records the two-sided effect of transactions through debit and credit", "eliminates the need for records", "applies only to family businesses"], answer: 1 },
+        { question: "57. A family-owned business experiencing disagreements between relatives over who should control the enterprise is facing an issue most closely connected with:", options: ["ownership and family-business management", "product packaging", "market segmentation", "price promotion"], answer: 0 },
+        { question: "58. Which management activity is most directly concerned with determining whether actual performance corresponds with planned objectives?", options: ["Planning", "Organizing", "Controlling", "Staffing"], answer: 2 },
+        { question: "59. Negotiation is particularly important in business because it helps parties:", options: ["avoid all disagreements permanently", "define terms of agreements and contracts", "eliminate competition", "guarantee equal outcomes in every situation"], answer: 1 },
+        { question: "60. Which of the following is least likely to be an application of negotiation?", options: ["Supplier contracts", "Partnership agreements", "Employment terms", "Elimination of all organizational communication"], answer: 3 },
+        { question: "61. When two departments negotiate over how a limited budget should be allocated, negotiation is serving primarily as a tool for:", options: ["resource allocation", "product development", "market segmentation", "customer profiling"], answer: 0 },
+        { question: "62. A negotiation that produces an agreement acceptable to all parties involved is most consistent with the objective of finding:", options: ["mutually acceptable solutions", "unilateral decisions", "compulsory outcomes", "zero communication"], answer: 0 },
+        { question: "63. Which of the following is most directly related to negotiation's role in strategic decision-making?", options: ["Determining the terms of strategic alliances", "Recording daily sales", "Designing product packaging", "Calculating employee attendance"], answer: 0 },
+        { question: "64. Successful negotiation can strengthen relationships with stakeholders because it may promote:", options: ["distrust and dependence", "trust, loyalty and cooperation", "secrecy and isolation", "conflict and uncertainty"], answer: 1 },
+        { question: "65. Which statement best captures the relationship between negotiation and conflict?", options: ["Negotiation is used only before conflict occurs.", "Effective negotiation can help resolve conflicts and disputes within a business setting.", "Negotiation always eliminates the interests of one party.", "Conflict makes negotiation unnecessary."], answer: 1 },
+        { question: "66. In the communication process, the person who originates a message is the:", options: ["receiver", "sender", "channel", "decoder"], answer: 1 },
+        { question: "67. If a message is sent but the receiver does not understand it as intended, the communication process has failed primarily in terms of:", options: ["effective message transmission and understanding", "business ownership", "product positioning", "resource allocation"], answer: 0 },
+        { question: "68. Which of the following best demonstrates effective business communication?", options: ["Communicating information without considering the receiver", "Communicating ideas clearly while adapting to the circumstances and audience", "Using technical language regardless of the audience", "Avoiding feedback from the receiver"], answer: 1 },
+        { question: "69. According to the material, finance is particularly important to enterprise operations because it enables entrepreneurs to acquire:", options: ["only labour", "labour, materials, technologies and machinery", "only advertising services", "only customer information"], answer: 1 },
+        { question: "70. Which financing arrangement is correctly matched with its duration according to the chapter?", options: ["Short-term — more than five years", "Medium-term — exceeds one year but does not exceed five years", "Long-term — does not exceed one year", "Short-term — exactly ten years"], answer: 1 },
+        { question: "71. An entrepreneur finances a business using retained earnings and personal savings. These sources are best classified as:", options: ["external financing", "internal financing", "government financing", "venture capital"], answer: 1 },
+        { question: "72. Which of the following is specifically presented as an external source of entrepreneurial finance?", options: ["Personal savings", "Plough-back of profits", "Share capital", "Retained earnings"], answer: 2 },
+        { question: "73. A group of investors provides substantial funds to a growing enterprise while accepting substantial risk and expecting capital gains. This best describes:", options: ["personal savings", "venture capital", "trade credit", "accrued expenses"], answer: 1 },
+        { question: "74. Venture capital differs from an ordinary loan particularly because investors may:", options: ["accept equity risk and expect capital gains", "demand only fixed interest payments", "refuse any ownership stake", "provide funds without considering risk"], answer: 0 },
+        { question: "75. An entrepreneur raises money by selling shares to investors. This financing method is:", options: ["equity finance", "trade credit", "overdraft financing", "accrued expenses"], answer: 0 },
+        { question: "76. Which statement about equity finance is incorrect according to the material?", options: ["It involves raising funds through shares or stocks.", "It necessarily means taking a conventional loan.", "It may involve existing or new investors.", "It can occur through venture capital or angel investors."], answer: 1 },
+        { question: "77. A low-income entrepreneur obtains a relatively small loan and related financial services despite being unable to secure a conventional commercial bank loan. This most closely illustrates:", options: ["micro-finance", "venture capital", "debenture financing", "long-term equity finance"], answer: 0 },
+        { question: "78. Which combination represents financing constraints discussed in the Nigerian entrepreneurial environment?", options: ["Cumbersome access to credit, poor infrastructure and unstable policies", "Excessive access to cheap credit and strong infrastructure", "Unlimited venture capital and low operating costs", "Perfect transparency and unrestricted commercial lending"], answer: 0 },
+        { question: "79. In the marketing process described in the material, what should occur before designing a customer-driven marketing strategy?", options: ["Obtaining value from customers", "Assessing the marketplace and understanding customer needs and demands", "Creating profitable relationships", "Setting product prices"], answer: 1 },
+        { question: "80. Which sequence correctly reflects the five-stage marketing process?", options: ["Create value → understand market → obtain value → promote → distribute", "Understand marketplace → design customer-driven strategy → create value programme → build relationships → obtain value", "Price → advertise → produce → research → sell", "Promote → distribute → research → price → retain"], answer: 1 },
+        { question: "81. Which element of the marketing mix is described as the only element that produces revenue?", options: ["Product", "Price", "Promotion", "Place"], answer: 1 },
+        { question: "82. A firm sets its price after considering the perceived value customers attach to the product. This is:", options: ["cost-oriented pricing", "competition-oriented pricing", "demand-oriented pricing", "production-oriented pricing"], answer: 2 },
+        { question: "83. The core product differs from the supportive product because the core product represents:", options: ["extra services such as installation and credit", "the actual benefit the buyer requires or expects", "only the product's packaging", "the product's distribution channel"], answer: 1 },
+        { question: "84. Which of the following belongs to the augmented product rather than the core product?", options: ["Pain relief from a painkiller", "The basic benefit expected from a product", "Installation and credit facilities", "The fundamental customer need"], answer: 2 },
+        { question: "85. A firm concentrates on producing goods cheaply and making them widely available because it assumes consumers favour readily available and reasonably priced products. This reflects the:", options: ["product concept", "selling concept", "production concept", "societal marketing concept"], answer: 2 },
+        { question: "86. The marketing concept differs from the selling concept because the marketing concept begins primarily with:", options: ["the factory and existing products", "target-market needs and wants", "aggressive promotion of unsought goods", "excess production capacity"], answer: 1 },
+        { question: "87. Which of the following is correctly matched with its e-commerce 5C component?", options: ["Communication — resource sharing for transaction completion", "Collaboration — interactions between companies and individuals across boundaries", "Computation — displaying goods to customers", "Commerce — customer reviews only"], answer: 1 },
+        { question: "88. A transaction between a business and a government agency conducted online is classified as:", options: ["B2B", "B2C", "C2C", "B2G"], answer: 3 },
+        { question: "89. The market/customer solution concept places particular emphasis on:", options: ["treating production as more important than customers", "understanding and effectively addressing customer needs", "eliminating customer feedback", "focusing only on competitors"], answer: 1 },
+        { question: "90. Customer experience (CX) is broader than a single customer interaction because it encompasses:", options: ["only product price", "everything an organization does to deliver superior experiences, value and growth for customers", "only advertising", "only customer complaints"], answer: 1 },
+        { question: "91. An entrepreneur uses real-time information from connected household devices to anticipate customer behaviour. The technology most directly involved is:", options: ["Blockchain", "Internet of Things", "Virtual Reality", "Data entry"], answer: 1 },
+        { question: "92. A technology overlays computer-generated content onto the user's physical environment. This is:", options: ["Virtual Reality", "Augmented Reality", "Blockchain", "Cloud accounting"], answer: 1 },
+        { question: "93. Which technology is specifically described as creating a simulated three-dimensional environment that a person can interact with?", options: ["AR", "VR", "IoT", "Data analytics"], answer: 1 },
+        { question: "94. An entrepreneur examines, cleans, transforms and models customer data to discover hidden patterns and useful information. This is:", options: ["data analytics", "augmented reality", "blockchain", "automation only"], answer: 0 },
+        { question: "95. According to the material, blockchain's relevance to customers extends beyond finance because it can help provide:", options: ["trust and transparency in supply chains", "cheaper advertising exclusively", "virtual product demonstrations", "employee training simulations"], answer: 0 },
+        { question: "96. Which AI application is most directly associated with predicting equipment failure before it occurs?", options: ["Targeted advertising", "Predictive maintenance", "Content creation", "Customer segmentation"], answer: 1 },
+        { question: "97. A business uses AI to analyse customer demographics, interests and online behaviour and then directs advertisements to specific customer groups. This is:", options: ["predictive maintenance", "targeted advertising", "inventory management", "virtual training"], answer: 1 },
+        { question: "98. Which of the following is identified as a limitation or concern associated with AI-powered business solutions?", options: ["Bias in training data", "Guaranteed elimination of all human jobs", "Inability to analyse large amounts of data", "Permanent elimination of business risks"], answer: 0 },
+        { question: "99. An entrepreneur identifies a customer problem, develops an innovative solution, finances the venture partly through personal savings, uses AI to personalize customer recommendations and sells the product through an online B2C platform. Which sequence of concepts is most appropriate?", options: ["Opportunity identification → personal savings → technological solution → B2C e-commerce", "Bookkeeping → venture capital → cultural entrepreneurship → B2G", "Market concept → overdraft → radical leadership → C2C", "Negotiation → micro-insurance → sustaining leadership → B2B"], answer: 0 },
+        { question: "100. A Nigerian entrepreneur notices a change in consumer behaviour, identifies a viable opportunity, organizes resources, introduces gradual improvements to an existing product, uses customer feedback to refine the product and employs digital marketing to reach customers. Which combination best describes the process?", options: ["Opportunity identification → entrepreneurship → incremental innovation → entrepreneurial marketing", "Serendipitous discovery → radical innovation → autocratic leadership → B2G", "Equity finance → disruptive innovation → bookkeeping → C2C", "Cultural entrepreneurship → sustaining leadership → micro-finance → product concept"], answer: 0 }
     ];
 
-    let currentIndex = 0;
-    const userAnswers = {};
+    let currentQuestionIndex = 0;
+    let userAnswers = {};
+    let isFinished = false;
 
-    const qIndexSpan = document.getElementById("qIndex");
-    const qTextDiv = document.getElementById("qText");
-    const optionsContainer = document.getElementById("optionsContainer");
-    const feedbackBox = document.getElementById("feedbackBox");
-    const prevBtn = document.getElementById("prevBtn");
-    const nextBtn = document.getElementById("nextBtn");
-    const finishEarlyBtn = document.getElementById("finishEarlyBtn");
-    const progressFill = document.getElementById("progressFill");
-    const scoreBadge = document.getElementById("scoreBadge");
-    const quizCard = document.getElementById("quizCard");
-    const resultCard = document.getElementById("resultCard");
+    // Timer Implementation (50 minutes)
+    function startTimer(durationInMinutes, onComplete) {
+        let timer = durationInMinutes * 60;
+        const display = document.querySelector('#time');
+        
+        const countdown = setInterval(function () {
+            let minutes = parseInt(timer / 60, 10);
+            let seconds = parseInt(timer % 60, 10);
 
-    function updateScoreBadge() {
-      let correctCount = 0;
-      Object.values(userAnswers).forEach(ans => {
-        if (ans.isCorrect) correctCount++;
-      });
-      scoreBadge.textContent = `Score: ${correctCount}`;
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                clearInterval(countdown);
+                alert("Time is up! Your quiz is being submitted automatically.");
+                if (typeof onComplete === "function") {
+                    onComplete();
+                }
+            }
+        }, 1000);
     }
 
     function loadQuestion() {
-      const item = quizData[currentIndex];
-      qIndexSpan.textContent = `Question ${currentIndex + 1} of ${quizData.length}`;
-      qTextDiv.textContent = item.question;
-
-      const progressPercent = ((currentIndex + 1) / quizData.length) * 100;
-      progressFill.style.width = `${progressPercent}%`;
-
-      prevBtn.disabled = (currentIndex === 0);
-      nextBtn.textContent = (currentIndex === quizData.length - 1) ? "Finish Quiz" : "Next";
-
-      optionsContainer.innerHTML = "";
-      feedbackBox.className = "feedback-box";
-      feedbackBox.style.display = "none";
-
-      const previousAttempt = userAnswers[currentIndex];
-
-      item.options.forEach((optText, i) => {
-        const btn = document.createElement("button");
-        btn.className = "option-btn";
-        btn.innerHTML = `<strong>${String.fromCharCode(65 + i)}.</strong> ${optText}`;
+        if (isFinished) return;
+        const q = quizData[currentQuestionIndex];
+        document.getElementById("question-tracker").textContent = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
+        document.getElementById("question-text").textContent = q.question;
         
-        if (previousAttempt !== undefined) {
-          btn.disabled = true;
-          if (i === item.answer) {
-            btn.classList.add("correct");
-          }
-          if (i === previousAttempt.selected && !previousAttempt.isCorrect) {
-            btn.classList.add("wrong");
-          }
-        } else {
-          btn.addEventListener("click", () => handleOptionSelect(i));
-        }
+        const optionsList = document.getElementById("options-list");
+        optionsList.innerHTML = "";
 
-        optionsContainer.appendChild(btn);
-      });
+        q.options.forEach((option, index) => {
+            const li = document.createElement("li");
+            li.className = "option-item";
+            if (userAnswers[currentQuestionIndex] === index) {
+                li.classList.add("selected");
+            }
+            li.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
+            li.onclick = () => selectOption(index);
+            optionsList.appendChild(li);
+        });
 
-      if (previousAttempt !== undefined) {
-        feedbackBox.style.display = "block";
-        if (previousAttempt.isCorrect) {
-          feedbackBox.classList.add("correct");
-          feedbackBox.innerHTML = `<strong>Correct!</strong> Choice ${String.fromCharCode(65 + item.answer)} is the correct answer.`;
-        } else {
-          feedbackBox.classList.add("wrong");
-          feedbackBox.innerHTML = `<strong>Incorrect.</strong> Correct answer is ${String.fromCharCode(65 + item.answer)}: ${item.options[item.answer]}`;
-        }
-      }
+        document.getElementById("prev-btn").disabled = currentQuestionIndex === 0;
+        document.getElementById("next-btn").textContent = currentQuestionIndex === quizData.length - 1 ? "Finish" : "Next";
     }
 
-    function handleOptionSelect(index) {
-      if (userAnswers[currentIndex] !== undefined) return;
-
-      const item = quizData[currentIndex];
-      const isCorrect = (index === item.answer);
-
-      userAnswers[currentIndex] = {
-        selected: index,
-        isCorrect: isCorrect
-      };
-
-      updateScoreBadge();
-
-      const buttons = optionsContainer.children;
-      if (isCorrect) {
-        buttons[index].classList.add("correct");
-        feedbackBox.classList.add("correct");
-        feedbackBox.innerHTML = `<strong>Correct!</strong> Choice ${String.fromCharCode(65 + item.answer)} is correct.`;
-      } else {
-        buttons[index].classList.add("wrong");
-        buttons[item.answer].classList.add("correct");
-        feedbackBox.classList.add("wrong");
-        feedbackBox.innerHTML = `<strong>Incorrect.</strong> Correct answer is ${String.fromCharCode(65 + item.answer)}: ${item.options[item.answer]}`;
-      }
-
-      feedbackBox.style.display = "block";
-      Array.from(buttons).forEach(btn => btn.disabled = true);
-    }
-
-    prevBtn.addEventListener("click", () => {
-      if (currentIndex > 0) {
-        currentIndex--;
+    function selectOption(index) {
+        userAnswers[currentQuestionIndex] = index;
         loadQuestion();
-      }
-    });
-
-    nextBtn.addEventListener("click", () => {
-      if (currentIndex < quizData.length - 1) {
-        currentIndex++;
-        loadQuestion();
-      } else {
-        showResults();
-      }
-    });
-
-    finishEarlyBtn.addEventListener("click", () => {
-      if (confirm("Are you sure you want to stop and grade your quiz now?")) {
-        showResults();
-      }
-    });
-
-    function showResults() {
-      quizCard.classList.add("hidden");
-      resultCard.classList.remove("hidden");
-
-      const attemptedCount = Object.keys(userAnswers).length;
-      let correctCount = 0;
-      Object.values(userAnswers).forEach(ans => {
-        if (ans.isCorrect) correctCount++;
-      });
-
-      const percentage = attemptedCount > 0 ? Math.round((correctCount / attemptedCount) * 100) : 0;
-      
-      document.getElementById("finalScore").textContent = `${percentage}%`;
-      document.getElementById("attemptSummary").textContent = `You completed ${attemptedCount} out of ${quizData.length} questions.`;
-      document.getElementById("scoreDetails").textContent = `Score: ${correctCount} correct out of ${attemptedCount} attempted`;
-
-      let comment = "Keep practicing!";
-      if (attemptedCount === 0) {
-        comment = "No questions were answered.";
-      } else if (percentage >= 80) {
-        comment = "Outstanding performance!";
-      } else if (percentage >= 60) {
-        comment = "Good effort! Review missed questions to improve.";
-      }
-
-      document.getElementById("gradeComment").textContent = comment;
     }
 
-    document.getElementById("restartBtn").addEventListener("click", () => {
-      currentIndex = 0;
-      for (let key in userAnswers) delete userAnswers[key];
-      updateScoreBadge();
-      resultCard.classList.add("hidden");
-      quizCard.classList.remove("hidden");
-      loadQuestion();
-    });
+    function nextQuestion() {
+        if (currentQuestionIndex < quizData.length - 1) {
+            currentQuestionIndex++;
+            loadQuestion();
+        } else {
+            finishQuiz();
+        }
+    }
 
-    loadQuestion();
-  </script>
+    function prevQuestion() {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            loadQuestion();
+        }
+    }
+
+    function finishQuiz() {
+        if (isFinished) return;
+        isFinished = true;
+
+        let score = 0;
+        quizData.forEach((q, index) => {
+            if (userAnswers[index] === q.answer) {
+                score++;
+            }
+        });
+
+        const quizContent = document.getElementById("quiz-content");
+        quizContent.innerHTML = `
+            <div id="score-display">
+                <h2>Quiz Completed! 🎉</h2>
+                <p>Your Score: ${score} / ${quizData.length}</p>
+                <p style="font-size: 14px; color: #666;">Great job practicing under timed exam conditions.</p>
+            </div>
+        `;
+        document.getElementById("timer-container").style.display = "none";
+        document.getElementById("finish-btn").style.display = "none";
+        document.getElementById("question-tracker").style.display = "none";
+    }
+
+    window.onload = function () {
+        loadQuestion();
+        startTimer(50, finishQuiz); // 50 minutes countdown
+    };
+</script>
+
 </body>
 </html>
